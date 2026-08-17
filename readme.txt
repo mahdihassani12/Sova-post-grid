@@ -4,7 +4,7 @@ Tags: elementor, posts, blog, grid, responsive
 Requires at least: 6.0
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 License: GPLv2 or later
 
 A professional responsive blog post grid widget for Elementor.
@@ -20,13 +20,17 @@ A professional responsive blog post grid widget for Elementor.
 == Features ==
 
 * Responsive grid columns for desktop, tablet, and mobile.
-* Thumbnail, date, linked title, and customizable-length description.
+* Thumbnail, date, linked title, and responsive description visibility and length controls.
 * Optional headline, subtitle, divider, and view-more link with icon.
 * Category include/exclude filters and flexible ordering.
 * Extensive typography, color, spacing, border, image, and hover controls.
 * Accessible semantic markup and reduced-motion support.
 
 == Changelog ==
+
+= 1.1.0 =
+* Added independent desktop, tablet, and mobile controls for description visibility and length.
+* Preserved existing grids by falling back to the global description settings.
 
 = 1.0.1 =
 * Fixed featured image rendering for dynamically queried posts.

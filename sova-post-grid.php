@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Sova Professional Post Grid for Elementor
  * Description: A responsive, fully customizable Elementor post grid with headline, subtitle, view-more link, thumbnails, dates, titles, and excerpts.
- * Version: 1.0.1
+ * Version: 1.1.0
  * Author: Mahdi Hassani
  * Text Domain: sova-post-grid
  * Requires at least: 6.0
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SOVA_POST_GRID_VERSION', '1.0.1' );
+define( 'SOVA_POST_GRID_VERSION', '1.1.0' );
 define( 'SOVA_POST_GRID_FILE', __FILE__ );
 define( 'SOVA_POST_GRID_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SOVA_POST_GRID_URL', plugin_dir_url( __FILE__ ) );
