@@ -182,6 +182,35 @@ class Sova_Post_Grid_Widget extends Widget_Base {
 		$this->add_control( 'show_excerpt', array( 'label' => esc_html__( 'Show Description', 'sova-post-grid' ), 'type' => Controls_Manager::SWITCHER, 'return_value' => 'yes', 'default' => 'yes' ) );
 		$this->add_control( 'excerpt_length', array( 'label' => esc_html__( 'Description Length (Words)', 'sova-post-grid' ), 'type' => Controls_Manager::NUMBER, 'default' => 22, 'min' => 1, 'max' => 200, 'condition' => array( 'show_excerpt' => 'yes' ) ) );
 		$this->add_control( 'excerpt_suffix', array( 'label' => esc_html__( 'Description Suffix', 'sova-post-grid' ), 'type' => Controls_Manager::TEXT, 'default' => '…', 'condition' => array( 'show_excerpt' => 'yes' ) ) );
+		$this->add_control( 'responsive_excerpt_heading', array(
+			'label' => esc_html__( 'Responsive Description', 'sova-post-grid' ),
+			'type' => Controls_Manager::HEADING,
+			'separator' => 'before',
+		) );
+
+		$visibility_options = array(
+			'' => esc_html__( 'Use Global Setting', 'sova-post-grid' ),
+			'yes' => esc_html__( 'Show', 'sova-post-grid' ),
+			'no' => esc_html__( 'Hide', 'sova-post-grid' ),
+		);
+		foreach ( array( 'desktop' => esc_html__( 'Desktop', 'sova-post-grid' ), 'tablet' => esc_html__( 'Tablet', 'sova-post-grid' ), 'mobile' => esc_html__( 'Mobile', 'sova-post-grid' ) ) as $device => $device_label ) {
+			$this->add_control( 'show_excerpt_' . $device, array(
+				/* translators: %s: responsive device name. */
+				'label' => sprintf( esc_html__( 'Show Description: %s', 'sova-post-grid' ), $device_label ),
+				'type' => Controls_Manager::SELECT,
+				'default' => '',
+				'options' => $visibility_options,
+			) );
+			$this->add_control( 'excerpt_length_' . $device, array(
+				/* translators: %s: responsive device name. */
+				'label' => sprintf( esc_html__( 'Description Length: %s', 'sova-post-grid' ), $device_label ),
+				'type' => Controls_Manager::NUMBER,
+				'default' => '',
+				'min' => 1,
+				'max' => 200,
+				'placeholder' => esc_html__( 'Use global length', 'sova-post-grid' ),
+			) );
+		}
 		$this->add_control( 'title_tag', array( 'label' => esc_html__( 'Post Title HTML Tag', 'sova-post-grid' ), 'type' => Controls_Manager::SELECT, 'default' => 'h3', 'options' => array( 'h2' => 'H2', 'h3' => 'H3', 'h4' => 'H4', 'h5' => 'H5', 'h6' => 'H6', 'div' => 'div' ) ) );
 		$this->add_control( 'open_new_tab', array( 'label' => esc_html__( 'Open Posts in New Tab', 'sova-post-grid' ), 'type' => Controls_Manager::SWITCHER, 'return_value' => 'yes' ) );
 		$this->end_controls_section();
@@ -361,11 +390,31 @@ class Sova_Post_Grid_Widget extends Widget_Base {
 					<time class="sova-post-grid__date" datetime="<?php echo esc_attr( get_the_date( DATE_W3C ) ); ?>"><?php echo esc_html( get_the_date( $settings['date_format'] ) ); ?></time>
 				<?php endif; ?>
 				<<?php echo esc_html( $title_tag ); ?> class="sova-post-grid__title"><a<?php echo $link_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><?php echo esc_html( get_the_title() ); ?></a></<?php echo esc_html( $title_tag ); ?>>
-				<?php if ( 'yes' === $settings['show_excerpt'] ) : ?>
-					<div class="sova-post-grid__excerpt"><?php echo esc_html( wp_trim_words( $excerpt, max( 1, (int) $settings['excerpt_length'] ), $settings['excerpt_suffix'] ) ); ?></div>
-				<?php endif; ?>
+				<?php foreach ( array( 'desktop', 'tablet', 'mobile' ) as $device ) : ?>
+					<?php if ( $this->is_excerpt_visible( $settings, $device ) ) : ?>
+						<div class="sova-post-grid__excerpt sova-post-grid__excerpt--<?php echo esc_attr( $device ); ?>"><?php echo esc_html( wp_trim_words( $excerpt, $this->get_excerpt_length( $settings, $device ), $settings['excerpt_suffix'] ) ); ?></div>
+					<?php endif; ?>
+				<?php endforeach; ?>
 			</div>
 		</article>
 		<?php
+	}
+
+	private function is_excerpt_visible( $settings, $device ) {
+		$responsive_key = 'show_excerpt_' . $device;
+		if ( isset( $settings[ $responsive_key ] ) && '' !== $settings[ $responsive_key ] ) {
+			return 'yes' === $settings[ $responsive_key ];
+		}
+
+		return isset( $settings['show_excerpt'] ) && 'yes' === $settings['show_excerpt'];
+	}
+
+	private function get_excerpt_length( $settings, $device ) {
+		$responsive_key = 'excerpt_length_' . $device;
+		if ( isset( $settings[ $responsive_key ] ) && is_numeric( $settings[ $responsive_key ] ) && 0 < (int) $settings[ $responsive_key ] ) {
+			return min( 200, (int) $settings[ $responsive_key ] );
+		}
+
+		return max( 1, min( 200, (int) $settings['excerpt_length'] ) );
 	}
 }
